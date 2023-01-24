@@ -33,7 +33,7 @@
 */
 
 /* Entry Point */
-ENTRY(Reset_Handler)
+/*ENTRY(init)*/
 
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM) + LENGTH(RAM); /* end of "RAM" Ram type memory */
@@ -55,7 +55,7 @@ SECTIONS
   .isr_vector :
   {
     . = ALIGN(4);
-    KEEP(*(.isr_vector)) /* Startup code */
+    KEEP(*(.vectors)) /* Startup code */
     . = ALIGN(4);
   } >FLASH
 
@@ -130,7 +130,8 @@ SECTIONS
 
   /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
-
+  INIT_DATA_VALUES = LOADADDR(.data);
+  INIT_DATA_START = .;
   /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {
@@ -140,7 +141,7 @@ SECTIONS
     *(.data*)          /* .data* sections */
     *(.RamFunc)        /* .RamFunc sections */
     *(.RamFunc*)       /* .RamFunc* sections */
-
+	INIT_DATA_END = .;
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
 
@@ -148,6 +149,7 @@ SECTIONS
 
   /* Uninitialized data section into "RAM" Ram type memory */
   . = ALIGN(4);
+  BSS_START = .;
   .bss :
   {
     /* This is used by the startup in order to initialize the .bss section */
@@ -161,7 +163,7 @@ SECTIONS
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >RAM
-
+	BSS_END = .;
   /* User_heap_stack section, used to check that there is enough "RAM" Ram  type memory left */
   ._user_heap_stack :
   {
